@@ -20,6 +20,7 @@ library(plotly)
 
 
 ## Importing Raster data to R - starting with a few test cases 
+     # note, for below, must download geotiff files from CEDAC website 
 GDALinfo("C:/Users/pegeorg/OneDrive - Emory University/Desktop/r-code/GeoTiff/aqdh-pm2-5-concentrations-contiguous-us-1-km-2000-2016-201610-geotiff/20161001.tif")
 Oct012016 <- raster(x = "C:/Users/pegeorg/OneDrive - Emory University/Desktop/r-code/GeoTiff/aqdh-pm2-5-concentrations-contiguous-us-1-km-2000-2016-201610-geotiff/20161001.tif")
 Oct082016 <- raster(x = "C:/Users/pegeorg/OneDrive - Emory University/Desktop/r-code/GeoTiff/aqdh-pm2-5-concentrations-contiguous-us-1-km-2000-2016-201610-geotiff/20161008.tif")
@@ -53,18 +54,11 @@ hist(Change_Oct012016_Oct082016,
      xlab = "Change of PM2.5", ylab = "Number of Pixels")
 
 
-#Create shape outlines
-Georgia_outline <- c("Georgia")
-ga_outline = us[match(toupper(Georgia_outline),toupper(us$NAME_1)),]
-plot(ga_outline)
-crs(ga_outline)
-
 #Create county outlines    https://rdrr.io/cran/tigris/man/counties.html
 ga_counties <- counties(state = 'GA')
 plot(ga_counties$geometry)
 ga_counties <- ga_counties$geometry
 plot(ga_counties)
-
 
 #review projection and plot, and note that they are different projection systems 
 st_crs(Oct012016)$proj4string
@@ -73,11 +67,10 @@ st_crs(ga_counties)$proj4string
 #change projection systems
 crs(ga_counties)   
 ga_counties_NAD83 <- st_transform(ga_counties, crs(Oct012016))
-ga_outline_NAD83 <- spTransform(ga_outline, crs(Oct012016))   #note the difference bw sp and st transform here (unsure why the difference, but it works)
+#ga_outline_NAD83 <- spTransform(ga_outline, crs(Oct012016))   #note the difference bw sp and st transform here (unsure why the difference, but it works)
 
 ga_outline_1 <- plot_usmap(include = "GA")   #but this is not a shapefile 
-crs(ga_outline_1)
-
+#crs(ga_outline_1)
 
 plot(Oct012016)
 plot(ga_counties_NAD83, add=TRUE)
@@ -88,7 +81,7 @@ plot(annual2010)
 plot(ga_counties_NAD83, add=TRUE)
 plot(ga_outline_NAD83, add=TRUE)
                      
-#will try to crop dataset using ga_counties_NAD83
+#will try to crop dataset using ga_counties_NAD83, stuck at this part
 r2 <- crop(annual2010, extent(ga_counties_NAD83))
 
 
@@ -142,7 +135,11 @@ crs(Oct012016)
 
 
 
-
+#Create shape outlines
+#ga_outline <- c("Georgia")
+#ga_outline = us[match(toupper(Georgia_outline),toupper(us$NAME_1)),]
+#plot(ga_outline)
+#crs(ga_outline)
 
 
 
